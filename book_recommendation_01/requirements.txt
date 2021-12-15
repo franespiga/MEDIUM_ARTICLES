@@ -1,0 +1,9 @@
+pandas
+numpy
+sentence_transformers
+tqdm
+tensorflow
+jsonlines
+cloudpickle
+wasabi
+typer
