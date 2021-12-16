@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  fastapi:
+    build: fastapi/
+    depends_on:
+      - embeddings
+    ports: 
+      - 8000:8000
+    networks:
+      - deploy_network
+    container_name: fastapi
+
+  streamlit:
+    build: streamlit/
+    depends_on:
+      - fastapi
+      - embeddings
+    ports: 
+        - 8501:8501
+    networks:
+      - deploy_network
+    container_name: streamlit
+
+  embeddings:
+    build: embeddings/
+    ports:
+      - 8502:8502
+    networks:
+      - deploy_network
+    container_name: embeddings
+
+networks:
+  deploy_network:
+    driver: bridge
