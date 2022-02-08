@@ -1,0 +1,59 @@
+version: '3'
+
+services:
+  fastapi:
+    build: fastapi/
+    depends_on:
+      - embeddings
+    ports: 
+      - 8000:8000
+    networks:
+      - deploy_network
+    container_name: fastapi
+
+  streamlit:
+    build: streamlit/
+    depends_on:
+      - fastapi
+      - embeddings
+    ports: 
+        - 8501:8501
+    networks:
+      - deploy_network
+    container_name: streamlit
+
+  embeddings:
+    build: embeddings/
+    ports:
+      - 8502:8502
+    networks:
+      - deploy_network
+    container_name: embeddings
+
+  elastic:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.0
+    container_name: es01
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+    deploy:
+      resources:
+        limits:
+          memory: 2GB
+        reservations:
+          memory: 2GB
+    volumes:
+      - data01:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - deploy_network
+
+
+volumes:
+  data01:
+    driver: local
+
+networks:
+  deploy_network:
+    driver: bridge
